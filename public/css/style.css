@@ -1,0 +1,40 @@
+/* @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Source+Sans+3&display=swap'); */
+/* @import url('https://fonts.googleapis.com/css2?family=Lora:wght@400;600&family=Oswald:wght@700&display=swap'); */
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Oswald:wght@700&display=swap');
+
+.hijau {
+    color: #606C5D;
+}
+
+.putih-butek {
+    color: #FFF4F4;
+}
+
+.krem {
+    color: #F7E6C4;
+}
+
+.emas {
+    color: #F1C376;
+}
+
+.header-1 {
+    font-family: 'Oswald';
+    font-weight: 700;
+    padding: 0;
+    margin: 0;
+}
+
+.label-1 {
+    font-family: 'Lato';
+    font-weight: 700;
+    padding: 0;
+    margin: 0;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
