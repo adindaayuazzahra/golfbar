@@ -47,12 +47,6 @@
     }
 
 
-    .ex1 {
-        /* background-color: lightblue; */
-        height: 400px;
-        overflow: auto;
-    }
-
     .bounce {
         position: relative;
         /* left: 50%; */

@@ -313,4 +313,9 @@ class AdminController extends Controller
 
         return response()->json(['message' => 'Pemenang berhasil di-lock.']);
     }
+
+    public function flightView()  {
+        $grups = Grup::with('peserta')->get();
+        return view('admin.grup-view', compact('grups'));
+    }
 }

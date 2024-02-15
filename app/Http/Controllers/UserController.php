@@ -41,9 +41,12 @@ class UserController extends Controller
         // Simpan QR code sebagai gambar di direktori publik
         Storage::disk('public')->put('qrcodes/' . $nama_file, $qrcode);
 
-        $request->session()->flash('message', 'Anda Berhasil Registrasi !');
-        $request->session()->flash('title', 'Selamat');
-        $request->session()->flash('icon', 'success');
-        return redirect()->route('index');
+        $request->session()->put('form_filled', true);
+
+        return redirect()->route('berhasil.regis');
+    }
+
+    public function BerhasilRegis()  {
+        return view('admin.konfirmasi');
     }
 }

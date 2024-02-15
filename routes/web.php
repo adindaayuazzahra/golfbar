@@ -17,8 +17,13 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-
+Route::get('/foo', function () {
+    Artisan::call('storage:link');
+    });
 Route::get('/', [UserController::class, 'index'])->name('index');
+Route::middleware('is.form.filled')->group(function () {
+    Route::get('/berhasil', [UserController::class, 'BerhasilRegis'])->name('berhasil.regis');
+});
 Route::post('/register/do', [UserController::class, 'registerDo'])->name('register.do');
 
 // ADMIN ROUTES
@@ -28,6 +33,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin', [AdminController::class, 'home'])->name('admin.home');
     Route::get('/admin/list-peserta', [AdminController::class, 'listPeserta'])->name('admin.list.peserta');
     Route::get('/admin/list-grup', [AdminController::class, 'listGrup'])->name('admin.list.grup');
+    Route::get('/admin/flight/view', [AdminController::class, 'flightView'])->name('admin.flight.view');
 
     Route::post('/admin/grup/add', [AdminController::class, 'grupAdd'])->name('admin.grup.add');
     Route::post('/admin/grup/edit/{id}', [AdminController::class, 'grupEdit'])->name('admin.grup.edit');
@@ -42,7 +48,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('admin/hadiah/delete/do/{id}', [AdminController::class, 'hadiahDeleteDo'])->name('admin.hadiah.delete.do');
     Route::get('/admin/generate/pemenang/{id}', [AdminController::class, 'generatePemenang'])->name('admin.generate.pemenang');
     Route::post('/admin/generate/pemenang/do', [AdminController::class, 'generatePemenangDo'])->name('admin.generate.pemenang.do');
-
     Route::post('/lock', [AdminController::class, 'lockPemenang'])->name('admin.lock');
 
 
@@ -55,6 +60,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/ambil/hadiah', [DoorprizeController::class, 'ambilHadiah'])->name('admin.ambil.hadiah');
     Route::get('/display/{id}/{status}', [DoorprizeController::class, 'display'])->name('admin.display');
     Route::get('/ambil/display', [DoorprizeController::class, 'ambilDisplay'])->name('admin.ambil.display');
+
 
     Route::get('/logout/do', [AuthController::class, 'logoutDo'])->name('logout.do');
 });

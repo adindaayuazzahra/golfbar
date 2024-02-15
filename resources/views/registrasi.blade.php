@@ -7,16 +7,20 @@
 @section('content')
 <div class="container p-0 d-flex  align-items-center justify-content-center">
     <div class="card my-4 mx-4 my-md-5 shadow shadow-md-lg" style="border-radius: 20px;border:none;">
-        <img class="card-img-top img-cover" src="{{asset('img/header.jpg')}}"
+        <img class="card-img-top img-cover" src="{{asset('img/header2.png')}}"
             style="max-height: 350px;border-radius: 20px 20px 0 0 ">
         <div class="col mt-3 px-2">
             <h1 class="text-center header-1 display-3"
                 style="border-bottom:10px solid #F1C376; border-top:10px solid #F1C376;">
                 RSVP
             </h1>
-            <h1 class="text-center header-1 hijau display-4">GOLF BARENG JASA MARGA</h1>
+            <h1 class="text-center header-1 hijau display-4">JASA MARGA FUN GOLF</h1>
+            <p class="mt-2 text-center"><span class="fw-bold">Contact Person</span> : 085215609439 <span
+                    class="fw-bold">(ARI
+                    SETYA)</span></p>
         </div>
         <div class="card-body ">
+
             <form action="{{route('register.do')}}" class="m-2 m-md-4" method="POST">
                 {{ csrf_field() }}
                 <div class="mb-4 position-relative">
@@ -55,6 +59,7 @@
                 <div class="mb-4 position-relative">
                     <label style="font-size:14pt;" for="whatsapp" class="form-label label-1 mb-1">No. Whatsapp <span
                             class="text-danger">*</span></label>
+                    <p class="fw-light fst-italic lh-sm">(*) Format Nomor : 08XXXXXXX</p>
                     <input autocomplete="off" type="number" class="form-control @error('whatsapp') is-invalid @enderror"
                         name="whatsapp" id="whatsapp" value="{{old('whatsapp')}}">
                     @error('whatsapp')
@@ -90,6 +95,8 @@
                     <button type="submit" class="btn btn-primary mt-3 rounded-pill">KIRIM</button>
                     {{-- <a href="{{route('index')}}" class="btn btn-dark">Kembali</a> --}}
                 </div>
+
+
             </form>
         </div>
     </div>

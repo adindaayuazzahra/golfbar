@@ -60,7 +60,7 @@
                         </td>
                         <td>
                             @if ($p->status == 0)
-                            <div class="badge rounded-pill text-bg-danger">Tidak Hadis</div>
+                            <div class="badge rounded-pill text-bg-danger">Tidak Hadir</div>
                             @elseif($p->status == 1)
                             <div class="badge rounded-pill text-bg-primary">Hadir</div>
                             @elseif($p->status == 2)
@@ -108,7 +108,7 @@
     $(document).ready(function() {
         $('#list').DataTable({
             responsive: true, // Opsi jumlah entri per halaman yang dapat dipilih
-            pageLength: 8, // Jumlah entri per halaman
+            pageLength: 5, // Jumlah entri per halaman
             lengthMenu: [5, 8]
         , });
     })
