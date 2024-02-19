@@ -7,7 +7,7 @@
 @section('content')
 <div class="container p-0 d-flex  align-items-center justify-content-center">
     <div class="card my-4 mx-4 my-md-5 shadow shadow-md-lg" style="border-radius: 20px;border:none;">
-        <img class="card-img-top img-cover" src="{{asset('img/header2.png')}}"
+        <img class="card-img-top img-cover" src="{{asset('img/header3.png')}}"
             style="max-height: 350px;border-radius: 20px 20px 0 0 ">
         <div class="col mt-3 px-2">
             <h1 class="text-center header-1 display-3"
@@ -15,15 +15,17 @@
                 RSVP
             </h1>
             <h1 class="text-center header-1 hijau display-4">JASA MARGA FUN GOLF</h1>
-            <p class="mt-2 text-center"><span class="fw-bold">Contact Person</span> : 085215609439 <span
-                    class="fw-bold">(ARI
-                    SETYA)</span></p>
+            <p class="mt-1 text-center">Powered By<span class="fw-bold"> PT JASAMARGA TOLLROAD MAINTENANCE</span>
+
         </div>
         <div class="card-body ">
 
             <form action="{{route('register.do')}}" class="m-2 m-md-4" method="POST">
                 {{ csrf_field() }}
                 <div class="mb-4 position-relative">
+                    <p class="mb-3"><span class="fw-bold"><span class="text-danger">*</span>Contact Person</span> :
+                        085215609439 <span class="fw-bold">(ARI
+                            SETYA)</span></p>
                     <label style="font-size:14pt;" for="npp" class="form-label label-1 mb-1">NPP <span
                             class="text-danger">*</span></label>
                     <input autocomplete="off" type="text" class="form-control @error('npp') is-invalid @enderror"
@@ -46,7 +48,7 @@
                     @enderror
                 </div>
                 <div class="mb-4 position-relative">
-                    <label style="font-size:14pt;" for="instansi" class="form-label label-1 mb-1">Asal Instansi <span
+                    <label style="font-size:14pt;" for="instansi" class="form-label label-1 mb-1">Unit Kerja<span
                             class="text-danger">*</span></label>
                     <input autocomplete="off" type="text" class="form-control @error('instansi') is-invalid @enderror"
                         name="instansi" id="instansi" value="{{old('instansi')}}">
@@ -63,6 +65,25 @@
                     <input autocomplete="off" type="number" class="form-control @error('whatsapp') is-invalid @enderror"
                         name="whatsapp" id="whatsapp" value="{{old('whatsapp')}}">
                     @error('whatsapp')
+                    <div class="invalid-tooltip">
+                        {{ $message }}
+                    </div>
+                    @enderror
+                </div>
+
+                <div class="mb-4 position-relative">
+                    <label style="font-size:14pt;" for="ukuran_baju" class="form-label label-1 mb-2">Ukuran Baju<span
+                            class="text-danger">*</span></label>
+                    <select class="form-select @error('ukuran_baju') is-invalid @enderror" id="ukuran_baju"
+                        name="ukuran_baju">
+                        <option selected>Pilih Ukuran Baju</option>
+                        <option value="S">S</option>
+                        <option value="M">M</option>
+                        <option value="L">L</option>
+                        <option value="XL">XL</option>
+                        <option value="XXL">XXL</option>
+                    </select>
+                    @error('ukuran_baju')
                     <div class="invalid-tooltip">
                         {{ $message }}
                     </div>

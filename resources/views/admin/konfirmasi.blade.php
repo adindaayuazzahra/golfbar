@@ -14,7 +14,7 @@
 @section('content')
 <div class="container p-0 d-flex  align-items-center justify-content-center">
     <div class="card my-4 mx-4 my-md-5 shadow shadow-md-lg" style="border-radius: 20px;border:none;">
-        <img class="card-img-top img-cover" src="{{asset('img/header2.png')}}"
+        <img class="card-img-top img-cover" src="{{asset('img/header3.png')}}"
             style="max-height: 350px;border-radius: 20px 20px 0 0">
         <div class="card-body d-flex flex-column justify-content-center align-items-center">
             <h5>Terima Kasih Anda Sudah Berhasil Mengisi Form Konfirmasi Kehadiran!</h5>

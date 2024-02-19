@@ -21,7 +21,8 @@ class UserController extends Controller
             'npp' => 'required|unique:tb_peserta',
             'instansi' => 'required',
             'status' => 'required',
-            'whatsapp' => 'required|numeric'
+            'whatsapp' => 'required|numeric',
+            'ukuran_baju' => 'required'
         ]);
 
         $peserta = new Peserta();
@@ -29,6 +30,7 @@ class UserController extends Controller
         $peserta->nama = strtoupper($request->nama);
         $peserta->instansi = strtoupper($request->instansi);
         $peserta->whatsapp = $request->whatsapp;
+        $peserta->ukuran_baju = $request->ukuran_baju;
 
         $nilaiStatus = ($request->status == 'y') ? 1 : 0;
         $peserta->status = $nilaiStatus;

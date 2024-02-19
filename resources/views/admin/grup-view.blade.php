@@ -27,4 +27,11 @@
     </div>
 </div>
 
+
+<script>
+    setTimeout(() => {
+        location.reload()
+    }, 10000);
+</script>
+
 @endsection

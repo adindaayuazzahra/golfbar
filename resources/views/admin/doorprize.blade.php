@@ -153,10 +153,10 @@
 </div>
 <!-- * end gagal input -->
 <div class="container p-0 m-0">
-    <div class="container rounded-pill p-2 mb-3 glass">
+    <div style="background-color: #e8b920;" class="container rounded-pill p-2 mb-3 glass ">
         <h1 class="text-center fw-bold sample goyang"><img class="me-2" src="{{asset('img/confetti.png')}}"
                 height="40px">
-            DOORPRIZE !! <img class="ms-2" src="{{asset('img/confetti.png')}}" height="40px"
+            DOORPRIZE !!! <img class="ms-2" src="{{asset('img/confetti.png')}}" height="40px"
                 style="transform: scaleX(-1);"></h1>
     </div>
     <div class="row">
@@ -333,7 +333,12 @@
             pemenangNames += element.nama; // Menambahkan nama peserta ke dalam string
         });
 
-        $('#pemenangName').text(pemenangNames); 
+        // delay nama pemenang
+        setTimeout(() => {
+            $('#pemenangName').text(pemenangNames); 
+        }, 5000);
+
+        
     }
     
     // Fungsi untuk melakukan polling setiap detik
@@ -352,9 +357,16 @@
                 
             },
             complete: function (response) {
+                
                 // console.log(response.responseJSON.pesertaDaftar)
                 // console.log(statusAwal + '  ----  ' +nilai);
-                if (nilai != response.responseJSON.pesertaDaftar[0].id_hadiah) {
+                
+                if (response.responseJSON.pesertaDaftar[0].id_hadiah == 'undefined' ) {
+                    var hadiahnya = 0
+                }else{
+                    var hadiahnya = response.responseJSON.pesertaDaftar[0].id_hadiah
+                }
+                if (nilai != hadiahnya) {
                     if (nilai != 0) {
                         var elementToHide = document.getElementById('hidds');
                         // Menyembunyikan elemen dengan mengatur display menjadi 'none'

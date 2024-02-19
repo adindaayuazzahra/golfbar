@@ -315,7 +315,11 @@ class AdminController extends Controller
     }
 
     public function flightView()  {
-        $grups = Grup::with('peserta')->get();
+        $grups = Grup::with(['peserta' => function ($query) {
+            $query->where('status', 2);
+        }])->get();
+        // $peserta = Peserta::where('status', 2);
+        
         return view('admin.grup-view', compact('grups'));
     }
 }

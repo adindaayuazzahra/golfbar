@@ -17,6 +17,8 @@ return new class extends Migration
             $table->string('instansi');
             $table->string('nama');
             $table->bigInteger('whatsapp');
+            $table->string('ukuran_baju');
+            $table->string('handicap')->nullable();
             $table->integer('status'); // 0 tidak datang - 1 datang - 2 registrasi - 3 regis dan dapet hadiah 
             $table->unsignedBigInteger('id_grup')->nullable();
             $table->foreign('id_grup')->references('id')->on('tb_grup')->cascadeOnUpdate()->onDelete('set null');

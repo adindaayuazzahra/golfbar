@@ -55,12 +55,12 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/admin/scan/do', [AdminController::class, 'scanDo'])->name('admin.scan.do');
     Route::get('/admin/download/{id}', [AdminController::class, 'downloadQr'])->name('admin.download.qr');
 
-    Route::get('/button-gen', [DoorprizeController::class, 'buttonGen'])->name('admin.button.generate');
-    Route::get('/display/view', [DoorprizeController::class, 'displayView'])->name('admin.display.view');
-    Route::get('/ambil/hadiah', [DoorprizeController::class, 'ambilHadiah'])->name('admin.ambil.hadiah');
-    Route::get('/display/{id}/{status}', [DoorprizeController::class, 'display'])->name('admin.display');
-    Route::get('/ambil/display', [DoorprizeController::class, 'ambilDisplay'])->name('admin.ambil.display');
-
-
+    
+    
     Route::get('/logout/do', [AuthController::class, 'logoutDo'])->name('logout.do');
 });
+Route::get('/button-gen', [DoorprizeController::class, 'buttonGen'])->name('admin.button.generate');
+Route::get('/display/view', [DoorprizeController::class, 'displayView'])->name('admin.display.view');
+Route::get('/ambil/hadiah', [DoorprizeController::class, 'ambilHadiah'])->name('admin.ambil.hadiah');
+Route::get('/display/{id}/{status}', [DoorprizeController::class, 'display'])->name('admin.display');
+Route::get('/ambil/display', [DoorprizeController::class, 'ambilDisplay'])->name('admin.ambil.display');
