@@ -12,10 +12,17 @@
         <div class="container">
             <div class="d-flex justify-content-between align-items-center my-3">
                 <h3><strong>List Peserta</strong></h3>
-                <div>
-                    <a href="{{ route('admin.home') }}" class="btn btn-secondary" style="border-radius: 5px;">
+                <div class="d-flex ">
+                    <a href="{{ route('admin.home') }}" class="btn btn-secondary me-2" style="border-radius: 5px;">
                         <i class="fa-solid fa-arrow-left-long"></i>
                     </a>
+                    <form action="{{ route('users.import') }}" class="d-flex" method="POST"
+                        enctype="multipart/form-data">
+                        @csrf
+                        <input type="file" name="file" class="form-control me-2">
+
+                        <button class="btn btn-success">IMPORT</button>
+                    </form>
                     {{-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#pesertaAdd">
                         <i class="fa-solid fa-plus"></i>
                     </button> --}}
@@ -31,13 +38,15 @@
                 </button>
             </div>
             @endif --}}
+
             <table id="list" class="table text-white" width="100%">
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>NPP</th>
                         <th>Nama</th>
                         <th>Instansi</th>
+                        <th>Size</th>
+                        <th>Whatsapp</th>
                         <th>Grup</th>
                         <th>Status</th>
                         <th>Hadiah</th>
@@ -48,9 +57,10 @@
                     @foreach ($pesertas as $p)
                     <tr>
                         <td>{{ $p->id }}</td>
-                        <td>{{ $p->npp }}</td>
                         <td>{{ $p->nama }}</td>
                         <td>{{ $p->instansi }}</td>
+                        <td>{{ $p->ukuran_baju }}</td>
+                        <td>{{ $p->whatsapp }}</td>
                         <td>
                             @if ($p->id_grup == 0)
                             -

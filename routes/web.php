@@ -55,7 +55,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/admin/scan/do', [AdminController::class, 'scanDo'])->name('admin.scan.do');
     Route::get('/admin/download/{id}', [AdminController::class, 'downloadQr'])->name('admin.download.qr');
 
-    
+    Route::post('users-import', [AdminController::class, 'import'])->name('users.import');
     
     Route::get('/logout/do', [AuthController::class, 'logoutDo'])->name('logout.do');
 });

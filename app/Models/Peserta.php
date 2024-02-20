@@ -10,6 +10,16 @@ class Peserta extends Model
     use HasFactory;
 
     protected $table = 'tb_peserta';
+    protected $fillable = [
+        'id',
+        'nama',
+        'status',
+        'instansi',
+        'ukuran_baju',
+        'id_grup',
+        'whatsapp'
+        // tambahkan kolom-kolom lain yang dapat diisi secara massal di sini jika ada
+    ];
 
     public function hadiah()
     {

@@ -18,7 +18,7 @@ class UserController extends Controller
     {
         request()->validate([
             'nama' => 'required',
-            'npp' => 'required|unique:tb_peserta',
+            // 'npp' => 'required|unique:tb_peserta',
             'instansi' => 'required',
             'status' => 'required',
             'whatsapp' => 'required|numeric',
@@ -26,7 +26,7 @@ class UserController extends Controller
         ]);
 
         $peserta = new Peserta();
-        $peserta->npp = strtoupper($request->npp);
+        // $peserta->npp = strtoupper($request->npp);
         $peserta->nama = strtoupper($request->nama);
         $peserta->instansi = strtoupper($request->instansi);
         $peserta->whatsapp = $request->whatsapp;
@@ -38,7 +38,7 @@ class UserController extends Controller
 
         // Make QRCODE
         $nama_file = strtoupper($request->nama) . '_' . strtoupper($request->instansi) . '.png';
-        $qrcode = QrCode::format('png')->margin(4)->size(500)->generate($request->npp);
+        $qrcode = QrCode::format('png')->margin(4)->size(500)->generate($request->nama);
 
         // Simpan QR code sebagai gambar di direktori publik
         Storage::disk('public')->put('qrcodes/' . $nama_file, $qrcode);

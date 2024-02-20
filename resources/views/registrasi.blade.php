@@ -22,10 +22,8 @@
 
             <form action="{{route('register.do')}}" class="m-2 m-md-4" method="POST">
                 {{ csrf_field() }}
-                <div class="mb-4 position-relative">
-                    <p class="mb-3"><span class="fw-bold"><span class="text-danger">*</span>Contact Person</span> :
-                        085215609439 <span class="fw-bold">(ARI
-                            SETYA)</span></p>
+                {{-- <div class="mb-4 position-relative">
+
                     <label style="font-size:14pt;" for="npp" class="form-label label-1 mb-1">NPP <span
                             class="text-danger">*</span></label>
                     <input autocomplete="off" type="text" class="form-control @error('npp') is-invalid @enderror"
@@ -35,8 +33,11 @@
                         {{ $message }}
                     </div>
                     @enderror
-                </div>
+                </div> --}}
                 <div class="mb-4 position-relative">
+                    <p class="mb-3"><span class="fw-bold"><span class="text-danger">*</span>Contact Person</span> :
+                        085215609439 <span class="fw-bold">(ARI
+                            SETYA)</span></p>
                     <label style="font-size:14pt;" for="nama" class="form-label label-1 mb-1">Nama Lengkap <span
                             class="text-danger">*</span></label>
                     <input autocomplete="off" type="text" class="form-control @error('nama') is-invalid @enderror"
