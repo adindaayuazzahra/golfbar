@@ -49,7 +49,6 @@ class AdminController extends Controller
             } else {
                 // Jika entri belum ada, buat entri baru
                 $newPeserta = Peserta::create([
-                    'id' => $row['id'],
                     'nama' => $row['nama'],
                     'instansi'=> $row['instansi'],
                     'status' => $row['status'], 
@@ -75,7 +74,11 @@ class AdminController extends Controller
         // Periksa apakah QR code sudah ada
         if (!Storage::disk('public')->exists($path)) {
             // Jika QR code belum ada, generate QR code baru
-            $qrcode = QrCode::format('png')->margin(4)->size(500)->generate($peserta->nama);
+            $qrcode = QrCode::format('png')
+            ->merge('../public/img/logogolf.png', 0.5, true) // Menggabungkan logo dengan proporsi 30% terhadap ukuran QR code
+            ->size(500)
+            ->margin(3)
+            ->generate($request->nama);
 
             // Simpan QR code sebagai gambar di direktori publik
             Storage::disk('public')->put($path, $qrcode);
@@ -231,7 +234,7 @@ class AdminController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'nama_hadiah' => 'required',
-            'foto' => 'required|mimes:png'
+            'foto' => 'required|mimes:png,jpg,jpeg'
         ]);
 
         if ($validator->fails()) {
@@ -268,7 +271,7 @@ class AdminController extends Controller
         $hadiah = Hadiah::find($id);
         $validator = Validator::make($request->all(), [
             'nama_hadiah_edit' => 'required',
-            'foto_edit' => 'mimes:png'
+            'foto_edit' => 'mimes:png,jpg,jpeg'
         ]);
 
         if ($validator->fails()) {
@@ -278,6 +281,12 @@ class AdminController extends Controller
         }
 
         if ($request->foto_edit) {
+
+            $pathToImage = 'images/' . $hadiah->foto;
+            if (Storage::disk('public')->exists($pathToImage)) {
+                Storage::disk('public')->delete($pathToImage);
+            }
+
             $gambar = $request->file('foto_edit');
             $namaGambar = time() . '_' . $gambar->getClientOriginalName();
             $gambar->move(storage_path('app/public/images/'), $namaGambar);
@@ -295,7 +304,6 @@ class AdminController extends Controller
         $hadiah = Hadiah::find($id);
         if ($hadiah) {
 
-
             // Hapus entri hadiah dari database
             $peserta = Peserta::where('id_hadiah', $id)->get();
             foreach ($peserta as $p) {
@@ -305,7 +313,8 @@ class AdminController extends Controller
             }
 
             // Hapus gambar terkait dari sistem file
-            $pathToImage = storage_path('app/public/images/') . $hadiah->foto;
+            // $pathToImage = storage_path('app/public/images/') . $hadiah->foto;
+            $pathToImage = 'images/' . $hadiah->foto;
             if (Storage::disk('public')->exists($pathToImage)) {
                 Storage::disk('public')->delete($pathToImage);
             }

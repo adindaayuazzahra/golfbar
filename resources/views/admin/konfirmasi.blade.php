@@ -20,8 +20,7 @@
             <h5>Terima Kasih Anda Sudah Berhasil Mengisi Form Konfirmasi Kehadiran!</h5>
             <p>Untuk info lebih lanjut akan di hubungi melalui Whatsapp.</p>
             <p class="mt-3"><span class="fw-bold">Contact Person</span> : 085215609439 <span class="fw-bold">(ARI
-                    SETYA)</span></p>
-
+                    SETYAWAN)</span></p>
         </div>
     </div>
 </div>

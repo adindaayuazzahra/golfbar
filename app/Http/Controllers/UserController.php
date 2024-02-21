@@ -38,7 +38,12 @@ class UserController extends Controller
 
         // Make QRCODE
         $nama_file = strtoupper($request->nama) . '_' . strtoupper($request->instansi) . '.png';
-        $qrcode = QrCode::format('png')->margin(4)->size(500)->generate($request->nama);
+        $qrcode = QrCode::format('png')
+        ->merge('../public/img/logogolf.png', 0.5, true) // Menggabungkan logo dengan proporsi 30% terhadap ukuran QR code
+        ->size(500)
+        ->margin(3)
+        ->generate($request->nama);
+        // QrCode::format('png')->margin(4)->size(500)->generate($request->nama);
 
         // Simpan QR code sebagai gambar di direktori publik
         Storage::disk('public')->put('qrcodes/' . $nama_file, $qrcode);
