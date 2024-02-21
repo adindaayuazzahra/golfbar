@@ -60,7 +60,7 @@
                     @enderror
                 </div>
                 <div class="mb-4 position-relative">
-                    <label style="font-size:14pt;" for="whatsapp" class="form-label label-1 mb-1">No. Whatsapp <span
+                    <label style="font-size:14pt;" for="whatsapp" class="form-label label-1 mb-1">No. Whatsapp<span
                             class="text-danger">*</span></label>
                     <p class="fw-light fst-italic lh-sm">(*) Format Nomor : 08XXXXXXX</p>
                     <input autocomplete="off" type="number" class="form-control @error('whatsapp') is-invalid @enderror"
@@ -94,7 +94,7 @@
                 <div class="mb-4 position-relative">
                     <label style="font-size:14pt;" for="status" class="form-label label-1 mb-2">Apakah anda
                         bersedia
-                        untuk hadir ? <span class="text-danger">*</span></label><br>
+                        untuk hadir ?<span class="text-danger">*</span></label><br>
 
                     <input type="radio" class="btn-check @error('status') is-invalid @enderror" name="status" value="y"
                         id="hadir" autocomplete="off" checked>
