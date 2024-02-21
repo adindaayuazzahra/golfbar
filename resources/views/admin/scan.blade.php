@@ -16,14 +16,14 @@
         <div id="preview" style="width:50vw"></div>
         <form id="form" action="{{route('admin.scan.do')}}" method="POST">
             {{ csrf_field() }}
-            <input type="hidden" name="npp" id="npp">
+            <input type="hidden" name="nama" id="nama">
         </form>
         <!-- Button trigger modal -->
     </div>
 
-    <button type="button" class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#inputmanual">
+    {{-- <button type="button" class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#inputmanual">
         Input Manual
-    </button>
+    </button> --}}
 
 </div>
 
@@ -33,7 +33,7 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content p-4">
             <div class="d-flex text-center flex-column justify-content-center mb-3">
-                <p class="mb-0">Registrasi dengan NPP</p>
+                <p class="mb-0">Registrasi atas nama</p>
                 <h4 id="confirmationNPP"></h4>
             </div>
             <div class="d-grid gap-2 d-flex justify-content-center">
@@ -45,17 +45,16 @@
 </div>
 
 <!-- Modal Input Manual -->
-<div class="modal fade" id="inputmanual" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+{{-- <div class="modal fade" id="inputmanual" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content p-4">
             <div class="d-flex justify-content-center mb-3">
-                {{-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> --}}
                 <h5>Registrasi</h5>
             </div>
             <form method="POST" action="{{route('admin.scan.do')}}">
                 {{ csrf_field() }}
                 <div class="form-floating mb-3">
-                    <input type="text" class="form-control" id="npp" name="npp" required autocomplete="off">
+                    <input type="text" class="form-control" id="nama" name="nama" required autocomplete="off">
                     <label for="floatingInput">NPP</label>
                 </div>
                 <div class="d-grid gap-2 d-flex justify-content-center">
@@ -65,7 +64,7 @@
             </form>
         </div>
     </div>
-</div>
+</div> --}}
 @endsection
 @section('jsPage')
 <script src="{{asset('js/html5-qrcode.min.js')}}"></script>
@@ -86,7 +85,7 @@
 
     function submitForm() {
         // Submit formulir setelah konfirmasi
-        document.getElementById('npp').value = document.getElementById('confirmationNPP').textContent;
+        document.getElementById('nama').value = document.getElementById('confirmationNPP').textContent;
         document.getElementById('form').submit();
     }
 </script>

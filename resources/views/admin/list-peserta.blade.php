@@ -7,7 +7,7 @@
 </style>
 @endsection
 @section('content')
-<div class="card shadow-lg" style="border-radius:20px; width:90vw">
+<div class="card shadow-lg" style="border-radius:20px;">
     <div class="card-body">
         <div class="container">
             <div class="d-flex justify-content-between align-items-center my-3">
@@ -110,16 +110,14 @@
         </div>
     </div>
 </div>
-</div>
-
 @endsection
 @section('jsPage')
 <script>
     $(document).ready(function() {
         $('#list').DataTable({
             responsive: true, // Opsi jumlah entri per halaman yang dapat dipilih
-            pageLength: 5, // Jumlah entri per halaman
-            lengthMenu: [5, 8]
+            pageLength: 10, // Jumlah entri per halaman
+            lengthMenu: [5, 8, 10]
         , });
     })
 </script>

@@ -1,6 +1,10 @@
 @extends('layout.web')
 @section('cssPage')
 <style>
+    #canvas {
+        height: 100vh;
+    }
+
     #confetti {
         position: absolute;
         top: 0;

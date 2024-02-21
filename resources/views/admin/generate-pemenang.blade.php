@@ -62,7 +62,7 @@
                             // Tambahkan header ke dalam thead
                             var headerRow = $('<tr>').append(
                                 $('<th>').text('No'),
-                                $('<th>').text('NPP'),
+                                $('<th>').text('id'),
                                 $('<th>').text('Nama Peserta')
                             );
                             thead.append(headerRow);
@@ -71,7 +71,7 @@
                             $.each(pesertaAcak, function(index, peserta) {
                                 var row = $('<tr>').append(
                                     $('<td>').text(index + 1),
-                                    $('<td>').text(peserta.npp),
+                                    $('<td>').text(peserta.id),
                                     $('<td>').text(peserta.nama)
                                 );
                                 tbody.append(row);
@@ -111,7 +111,7 @@
 
                 // Menyimpan data peserta ke dalam array
                 pemenangData.push({
-                    npp: nppPeserta,
+                    id: nppPeserta,
                     nama: namaPeserta
                 });
             });
@@ -135,7 +135,6 @@
                 }
             });
         });
-
 
     });
 </script>

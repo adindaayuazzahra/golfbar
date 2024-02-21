@@ -89,10 +89,11 @@ class AdminController extends Controller
 
     public function scanDo(Request $request)
     {
-        $npp = $request->npp;
-        $peserta = Peserta::where('npp', $npp)->first();
+        // dd($request);
+        $nama = $request->nama;
+        $peserta = Peserta::where('nama', $nama)->first();
         if (!$peserta) {
-            $request->session()->flash('message', 'Peserta belum mengisi Form RSVP');
+            $request->session()->flash('message', 'Peserta belum terdaftar');
             $request->session()->flash('title', 'Gagal registrasi!');
             $request->session()->flash('icon', 'error');
             return redirect()->route('admin.scan');
@@ -298,15 +299,15 @@ class AdminController extends Controller
             // Hapus entri hadiah dari database
             $peserta = Peserta::where('id_hadiah', $id)->get();
             foreach ($peserta as $p) {
-                $p->status = 1;
+                $p->status = 2;
                 $p->id_hadiah = NULL;
                 $p->save();
             }
 
             // Hapus gambar terkait dari sistem file
             $pathToImage = storage_path('app/public/images/') . $hadiah->foto;
-            if (File::exists($pathToImage)) {
-                File::delete($pathToImage);
+            if (Storage::disk('public')->exists($pathToImage)) {
+                Storage::disk('public')->delete($pathToImage);
             }
 
             $hadiah->delete();
@@ -360,7 +361,7 @@ class AdminController extends Controller
         // Loop melalui array pemenang dan lakukan locking pada masing-masing peserta
         foreach ($request->input('pemenang') as $pesertaData) {
             // Cari peserta berdasarkan NPP atau ID peserta, sesuaikan dengan struktur data yang dikirim dari frontend
-            $peserta = Peserta::where('npp', $pesertaData['npp'])->first();
+            $peserta = Peserta::where('id', $pesertaData['id'])->first();
 
             if ($peserta) {
                 // Ubah status dan isi id_hadiah pada peserta
@@ -375,7 +376,7 @@ class AdminController extends Controller
 
     public function flightView()  {
         $grups = Grup::with(['peserta' => function ($query) {
-            $query->where('status', 2);
+            $query->where('status', 2)->orWhere('status', 3);
         }])->get();
         // $peserta = Peserta::where('status', 2);
         

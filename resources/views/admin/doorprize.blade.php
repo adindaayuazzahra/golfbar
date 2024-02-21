@@ -171,7 +171,7 @@
                     <div class="d-flex justify-content-center align-items-center border-none"
                         style="background-color:#277BC0;padding:10px;border-radius:25px 0px 25px 0px ;">
                         {{-- <h4 id="nilaiPilihan" class="font-weight-bold text-center"></h4> --}}
-                        <h4 class="text-light header-1 display-6" id="hadiahName">Hadiah</h4>
+                        <h4 class="text-light text-center header-1 display-6" id="hadiahName">Hadiah</h4>
                     </div>
                 </div>
             </div>
@@ -376,14 +376,14 @@
                         setTimeout(() => {
                             $('#rollingDoor').modal('hide');
                             $('#cong')[0].play();
-                            Swal.fire({
-                            position: "center",
-                            icon: "success",
-                            title: "Success",
-                            text:"Selamat kepada para pemenang..",
-                            showConfirmButton: false,
-                            timer: 4500
-                            });
+                            // Swal.fire({
+                            // position: "center",
+                            // icon: "success",
+                            // title: "Success",
+                            // text:"Selamat kepada para pemenang..",
+                            // showConfirmButton: false,
+                            // timer: 4500
+                            // });
                             setTimeout(() => {
                                 
                             }, 6000);

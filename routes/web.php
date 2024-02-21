@@ -1,8 +1,8 @@
 <?php
 
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\authController;
-use App\Http\Controllers\AuthController as ControllersAuthController;
+// use App\Http\Controllers\authController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DoorprizeController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -33,7 +33,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin', [AdminController::class, 'home'])->name('admin.home');
     Route::get('/admin/list-peserta', [AdminController::class, 'listPeserta'])->name('admin.list.peserta');
     Route::get('/admin/list-grup', [AdminController::class, 'listGrup'])->name('admin.list.grup');
-    Route::get('/admin/flight/view', [AdminController::class, 'flightView'])->name('admin.flight.view');
+   
 
     Route::post('/admin/grup/add', [AdminController::class, 'grupAdd'])->name('admin.grup.add');
     Route::post('/admin/grup/edit/{id}', [AdminController::class, 'grupEdit'])->name('admin.grup.edit');
@@ -59,6 +59,8 @@ Route::middleware(['auth'])->group(function () {
     
     Route::get('/logout/do', [AuthController::class, 'logoutDo'])->name('logout.do');
 });
+
+Route::get('/admin/flight/view', [AdminController::class, 'flightView'])->name('admin.flight.view');
 Route::get('/button-gen', [DoorprizeController::class, 'buttonGen'])->name('admin.button.generate');
 Route::get('/display/view', [DoorprizeController::class, 'displayView'])->name('admin.display.view');
 Route::get('/ambil/hadiah', [DoorprizeController::class, 'ambilHadiah'])->name('admin.ambil.hadiah');
