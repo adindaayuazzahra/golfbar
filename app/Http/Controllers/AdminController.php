@@ -6,7 +6,6 @@ use App\Models\Display;
 use App\Models\Grup;
 use App\Models\Hadiah;
 use App\Models\Peserta;
-use Faker\Core\File;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use App\Imports\PesertaImport;
@@ -27,11 +26,11 @@ class AdminController extends Controller
         return view('admin.list-peserta', compact('pesertas'));
     }
 
-    public function import(Request $request) 
+    public function import(Request $request)
     {
         $file = $request->file('file');
         $excelData = Excel::toCollection(new PesertaImport, $file)[0];
-    
+
         foreach ($excelData as $row) {
             // Check if the user already exists based on some unique criteria
             $existingUser = Peserta::where('nama', $row['nama'])->first();
@@ -40,29 +39,28 @@ class AdminController extends Controller
                 // Jika entri sudah ada, perbarui kolom yang kosong
                 $existingUser->update([
                     'nama' => $row['nama'],
-                    'instansi'=> $row['instansi'], 
-                    'ukuran_baju' => $row['ukuran_baju'], 
-                    'status' => $row['status'], 
-                    'id_grup' => $row['id_grup'], 
-                    'whatsapp' => $row['whatsapp'], 
+                    'instansi' => $row['instansi'],
+                    'ukuran_baju' => $row['ukuran_baju'],
+                    'status' => $row['status'],
+                    'id_grup' => $row['id_grup'],
+                    'whatsapp' => $row['whatsapp'],
                 ]);
             } else {
                 // Jika entri belum ada, buat entri baru
                 $newPeserta = Peserta::create([
                     'nama' => $row['nama'],
-                    'instansi'=> $row['instansi'],
-                    'status' => $row['status'], 
-                    'ukuran_baju' => $row['ukuran_baju'], 
-                    'id_grup' => $row['id_grup'],  
-                    'whatsapp' => $row['whatsapp'],  
+                    'instansi' => $row['instansi'],
+                    'status' => $row['status'],
+                    'ukuran_baju' => $row['ukuran_baju'],
+                    'id_grup' => $row['id_grup'],
+                    'whatsapp' => $row['whatsapp'],
                 ]);
 
                 $this->generateQRCodeIfNeeded($newPeserta);
             }
-          
         }
-    
-               
+
+
         return back();
     }
 
@@ -74,11 +72,12 @@ class AdminController extends Controller
         // Periksa apakah QR code sudah ada
         if (!Storage::disk('public')->exists($path)) {
             // Jika QR code belum ada, generate QR code baru
+            // ->merge(public_path('../../img/logogolf.png'), 0.5, true)
             $qrcode = QrCode::format('png')
-            ->merge('../public/img/logogolf.png', 0.5, true) // Menggabungkan logo dengan proporsi 30% terhadap ukuran QR code
-            ->size(500)
-            ->margin(3)
-            ->generate($request->nama);
+                ->merge('../public/img/logogolf.png', 0.5, true) // Menggabungkan logo dengan proporsi 30% terhadap ukuran QR code
+                ->size(500)
+                ->margin(3)
+                ->generate($peserta->nama);
 
             // Simpan QR code sebagai gambar di direktori publik
             Storage::disk('public')->put($path, $qrcode);
@@ -383,12 +382,13 @@ class AdminController extends Controller
         return response()->json(['message' => 'Pemenang berhasil di-lock.']);
     }
 
-    public function flightView()  {
+    public function flightView()
+    {
         $grups = Grup::with(['peserta' => function ($query) {
             $query->where('status', 2)->orWhere('status', 3);
         }])->get();
         // $peserta = Peserta::where('status', 2);
-        
+
         return view('admin.grup-view', compact('grups'));
     }
 }

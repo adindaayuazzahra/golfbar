@@ -38,11 +38,12 @@ class UserController extends Controller
 
         // Make QRCODE
         $nama_file = strtoupper($request->nama) . '_' . strtoupper($request->instansi) . '.png';
+        // ->merge(public_path('../../img/logogolf.png'), 0.5, true)
         $qrcode = QrCode::format('png')
-        ->merge('../public/img/logogolf.png', 0.5, true) // Menggabungkan logo dengan proporsi 30% terhadap ukuran QR code
-        ->size(500)
-        ->margin(3)
-        ->generate($request->nama);
+            ->merge('../public/img/logogolf.png', 0.5, true) // Menggabungkan logo dengan proporsi 30% terhadap ukuran QR code
+            ->size(500)
+            ->margin(3)
+            ->generate($request->nama);
         // QrCode::format('png')->margin(4)->size(500)->generate($request->nama);
 
         // Simpan QR code sebagai gambar di direktori publik
@@ -53,7 +54,8 @@ class UserController extends Controller
         return redirect()->route('berhasil.regis');
     }
 
-    public function BerhasilRegis()  {
+    public function BerhasilRegis()
+    {
         return view('admin.konfirmasi');
     }
 }
