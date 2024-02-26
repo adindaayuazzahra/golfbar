@@ -17,7 +17,7 @@ class Peserta extends Model
         'instansi',
         'ukuran_baju',
         'id_grup',
-        'whatsapp'
+        'whatsapp',
         // tambahkan kolom-kolom lain yang dapat diisi secara massal di sini jika ada
     ];
 

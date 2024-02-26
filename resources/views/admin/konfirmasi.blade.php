@@ -17,9 +17,11 @@
         <img class="card-img-top img-cover" src="{{asset('img/header3.png')}}"
             style="max-height: 350px;border-radius: 20px 20px 0 0">
         <div class="card-body d-flex flex-column justify-content-center align-items-center">
-            <h5>Terima Kasih Anda Sudah Berhasil Mengisi Form Konfirmasi Kehadiran!</h5>
-            <p>Untuk info lebih lanjut akan di hubungi melalui Whatsapp.</p>
-            <p class="mt-3"><span class="fw-bold">Contact Person</span> : 085215609439 <span class="fw-bold">(ARI
+            <h4 class="text-center">Terima Kasih</h4>
+            <p class="text-center">Anda Sudah Berhasil Mengisi Form Konfirmasi Kehadiran. <br>Untuk info lebih lanjut
+                akan di hubungi melalui Whatsapp oleh panitia.</p>
+            <p class="mt-3 text-center"><span class="fw-bold">Contact Person</span> : 085215609439 <span
+                    class="fw-bold">(ARI
                     SETYAWAN)</span></p>
         </div>
     </div>

@@ -33,11 +33,14 @@ class AdminController extends Controller
 
         foreach ($excelData as $row) {
             // Check if the user already exists based on some unique criteria
+            if(!empty($row['nama'])){
+
+           
             $existingUser = Peserta::where('nama', $row['nama'])->first();
 
             if ($existingUser) {
                 // Jika entri sudah ada, perbarui kolom yang kosong
-                $existingUser->update([
+                $existingUser->update([  
                     'nama' => $row['nama'],
                     'instansi' => $row['instansi'],
                     'ukuran_baju' => $row['ukuran_baju'],
@@ -59,9 +62,10 @@ class AdminController extends Controller
                 $this->generateQRCodeIfNeeded($newPeserta);
             }
         }
+        }
 
-
-        return back();
+        $pesertas = Peserta::all();
+        return  redirect()->route('admin.list.peserta', compact('pesertas'));
     }
 
     private function generateQRCodeIfNeeded($peserta)
@@ -71,10 +75,10 @@ class AdminController extends Controller
 
         // Periksa apakah QR code sudah ada
         if (!Storage::disk('public')->exists($path)) {
-            // Jika QR code belum ada, generate QR code baru
-            // ->merge(public_path('../../img/logogolf.png'), 0.5, true)
+            // Jika QR code belum ada, generate QR code 
             $qrcode = QrCode::format('png')
-                ->merge('../public/img/logogolf.png', 0.5, true) // Menggabungkan logo dengan proporsi 30% terhadap ukuran QR code
+            // ->merge(public_path('../../img/logogolf.png'), 0.3, true)
+                ->merge('../public/img/logogolf.png', 0.3, true) // Menggabungkan logo dengan proporsi 30% terhadap ukuran QR code
                 ->size(500)
                 ->margin(3)
                 ->generate($peserta->nama);
@@ -114,6 +118,33 @@ class AdminController extends Controller
             $request->session()->flash('title', 'Gagal registrasi!');
             $request->session()->flash('icon', 'error');
             return redirect()->route('admin.scan');
+        }
+    }
+
+    public function scanGunDo(Request $request) {
+        $pesertas = Peserta::all();
+        $nama = $request->nama;
+        $peserta = Peserta::where('nama', $nama)->first();
+        if (!$peserta) {
+            $request->session()->flash('message', 'Peserta belum terdaftar');
+            $request->session()->flash('title', 'Gagal registrasi!');
+            $request->session()->flash('icon', 'danger');
+            return redirect()->route('admin.list.peserta', compact('pesertas'));
+        }
+        if ($peserta && $peserta->status == 0 || $peserta->status == 1) {
+            $peserta->status = 2;
+            $peserta->save();
+            $nama = $peserta->nama;
+            $request->session()->flash('title', 'Berhasil Registrasi!');
+            $request->session()->flash('message', 'Selamat ' . $nama . ', Anda berhasil melakukan registrasi');
+            $request->session()->flash('icon', 'success');
+            return redirect()->route('admin.list.peserta', compact('pesertas'));
+        } else if ($peserta && $peserta->status == 2) {
+            $nama = $peserta->nama;
+            $request->session()->flash('message', 'Peserta Sudah Melakukan Registrasi Qrcode Atas Nama ' . $nama);
+            $request->session()->flash('title', 'Gagal registrasi!');
+            $request->session()->flash('icon', 'danger');
+            return redirect()->route('admin.list.peserta', compact('pesertas'));
         }
     }
 

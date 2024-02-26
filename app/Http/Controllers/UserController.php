@@ -22,7 +22,7 @@ class UserController extends Controller
             'instansi' => 'required',
             'status' => 'required',
             'whatsapp' => 'required|numeric',
-            'ukuran_baju' => 'required'
+            'ukuran_baju' => 'required|not_in:Pilih Ukuran Baju'
         ]);
 
         $peserta = new Peserta();
@@ -38,9 +38,9 @@ class UserController extends Controller
 
         // Make QRCODE
         $nama_file = strtoupper($request->nama) . '_' . strtoupper($request->instansi) . '.png';
-        // ->merge(public_path('../../img/logogolf.png'), 0.5, true)
         $qrcode = QrCode::format('png')
-            ->merge('../public/img/logogolf.png', 0.5, true) // Menggabungkan logo dengan proporsi 30% terhadap ukuran QR code
+        // ->merge(public_path('../../img/logogolf.png'), 0.3, true)
+            ->merge('../public/img/logogolf.png', 0.3, true) // Menggabungkan logo dengan proporsi 30% terhadap ukuran QR code
             ->size(500)
             ->margin(3)
             ->generate($request->nama);

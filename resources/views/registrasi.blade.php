@@ -14,9 +14,7 @@
                 style="border-bottom:10px solid #F1C376; border-top:10px solid #F1C376;">
                 RSVP
             </h1>
-            <h1 class="text-center header-1 hijau display-4">JASA MARGA FUN GOLF</h1>
-            <p class="mt-1 text-center">Powered By<span class="fw-bold"> PT JASAMARGA TOLLROAD MAINTENANCE</span>
-
+            <h1 class="text-center header-1 hijau display-4">GOBAR JASA MARGA</h1>
         </div>
         <div class="card-body ">
 
@@ -37,7 +35,7 @@
                 <div class="mb-4 position-relative">
                     <p class="mb-3"><span class="fw-bold"><span class="text-danger">*</span>Contact Person</span> :
                         085215609439 <span class="fw-bold">(ARI
-                            SETYA)</span></p>
+                            SETYAWAN)</span></p>
                     <label style="font-size:14pt;" for="nama" class="form-label label-1 mb-1">Nama Lengkap <span
                             class="text-danger">*</span></label>
                     <input autocomplete="off" type="text" class="form-control @error('nama') is-invalid @enderror"
@@ -117,9 +115,8 @@
                     <button type="submit" class="btn btn-primary mt-3 rounded-pill">KIRIM</button>
                     {{-- <a href="{{route('index')}}" class="btn btn-dark">Kembali</a> --}}
                 </div>
-
-
             </form>
+            <p class="mt-1 text-center">© 2024 IT & GA PT JASAMARGA TOLLROAD MAINTENANCE</p>
         </div>
     </div>
 </div>
