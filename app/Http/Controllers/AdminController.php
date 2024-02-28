@@ -11,7 +11,10 @@ use Illuminate\Http\Request;
 use App\Imports\PesertaImport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
+// use Intervention\Image\Image;
+use Intervention\Image\ImageManager as Image;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
+
 
 class AdminController extends Controller
 {
@@ -33,35 +36,35 @@ class AdminController extends Controller
 
         foreach ($excelData as $row) {
             // Check if the user already exists based on some unique criteria
-            if(!empty($row['nama'])){
+            if (!empty($row['nama'])) {
 
-           
-            $existingUser = Peserta::where('nama', $row['nama'])->first();
 
-            if ($existingUser) {
-                // Jika entri sudah ada, perbarui kolom yang kosong
-                $existingUser->update([  
-                    'nama' => $row['nama'],
-                    'instansi' => $row['instansi'],
-                    'ukuran_baju' => $row['ukuran_baju'],
-                    'status' => $row['status'],
-                    'id_grup' => $row['id_grup'],
-                    'whatsapp' => $row['whatsapp'],
-                ]);
-            } else {
-                // Jika entri belum ada, buat entri baru
-                $newPeserta = Peserta::create([
-                    'nama' => $row['nama'],
-                    'instansi' => $row['instansi'],
-                    'status' => $row['status'],
-                    'ukuran_baju' => $row['ukuran_baju'],
-                    'id_grup' => $row['id_grup'],
-                    'whatsapp' => $row['whatsapp'],
-                ]);
+                $existingUser = Peserta::where('nama', $row['nama'])->first();
 
-                $this->generateQRCodeIfNeeded($newPeserta);
+                if ($existingUser) {
+                    // Jika entri sudah ada, perbarui kolom yang kosong
+                    $existingUser->update([
+                        'nama' => $row['nama'],
+                        'instansi' => $row['instansi'],
+                        'ukuran_baju' => $row['ukuran_baju'],
+                        'status' => $row['status'],
+                        'id_grup' => $row['id_grup'],
+                        'whatsapp' => $row['whatsapp'],
+                    ]);
+                } else {
+                    // Jika entri belum ada, buat entri baru
+                    $newPeserta = Peserta::create([
+                        'nama' => $row['nama'],
+                        'instansi' => $row['instansi'],
+                        'status' => $row['status'],
+                        'ukuran_baju' => $row['ukuran_baju'],
+                        'id_grup' => $row['id_grup'],
+                        'whatsapp' => $row['whatsapp'],
+                    ]);
+
+                    $this->generateQRCodeIfNeeded($newPeserta);
+                }
             }
-        }
         }
 
         $pesertas = Peserta::all();
@@ -70,14 +73,14 @@ class AdminController extends Controller
 
     private function generateQRCodeIfNeeded($peserta)
     {
-        $nama_file = strtoupper($peserta->nama) . '_' . strtoupper($peserta->instansi) . '.png';
+        $nama_file = $peserta->nama . '_' . $peserta->instansi . '.png';
         $path = 'qrcodes/' . $nama_file;
 
         // Periksa apakah QR code sudah ada
         if (!Storage::disk('public')->exists($path)) {
             // Jika QR code belum ada, generate QR code 
             $qrcode = QrCode::format('png')
-            // ->merge(public_path('../../img/logogolf.png'), 0.3, true)
+                // ->merge(public_path('../../img/logogolf.png'), 0.3, true)
                 ->merge('../public/img/logogolf.png', 0.3, true) // Menggabungkan logo dengan proporsi 30% terhadap ukuran QR code
                 ->size(500)
                 ->margin(3)
@@ -87,6 +90,40 @@ class AdminController extends Controller
             Storage::disk('public')->put($path, $qrcode);
         }
     }
+
+    // private function generateQRCodeIfNeeded($peserta)
+    // {
+    //     $nama_file = strtoupper($peserta->nama) . '_' . strtoupper($peserta->instansi) . '.png';
+    //     $path = 'qrcodes/' . $nama_file;
+
+    //     // Periksa apakah QR code sudah ada
+    //     if (!Storage::disk('public')->exists($path)) {
+    //         // Jika QR code belum ada, generate QR code 
+    //         $qrCode = QrCode::format('png')
+    //             ->merge('../public/img/logogolf.png', 0.3, true) // Menggabungkan logo dengan proporsi 30% terhadap ukuran QR code
+    //             ->size(500)
+    //             ->margin(3)
+    //             ->generate($peserta->nama);
+
+    //         // Tambahkan teks di bawah barcode
+
+    //         $image = Image::make($qrCode);
+    //         $text = strtoupper($peserta->nama); // Teks yang akan ditambahkan
+    //         $image->text($text, $image->width() / 2, $image->height() + 20, function ($font) {
+    //             $font->file(public_path('fonts/arial.ttf')); // Path ke font yang akan digunakan
+    //             $font->size(24); // Ukuran font
+    //             $font->color('#000000'); // Warna teks (dalam format hex)
+    //             $font->align('center'); // Posisi teks (center)
+    //             $font->valign('bottom'); // Posisi teks (bottom)
+    //         });
+
+    //         // Simpan QR code dengan teks sebagai gambar di direktori publik
+    //         Storage::disk('public')->put($path, $image->encode());
+    //     }
+
+    //     // // Setelah QR code dibuat atau jika sudah ada, Anda dapat mengembalikan respons download seperti yang Anda lakukan sebelumnya
+    //     // return response()->download(storage_path('app/public/' . $path));
+    // }
 
     public function scan()
     {
@@ -121,7 +158,8 @@ class AdminController extends Controller
         }
     }
 
-    public function scanGunDo(Request $request) {
+    public function scanGunDo(Request $request)
+    {
         $pesertas = Peserta::all();
         $nama = $request->nama;
         $peserta = Peserta::where('nama', $nama)->first();
