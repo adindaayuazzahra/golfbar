@@ -114,59 +114,65 @@ class AdminController extends Controller
         $dataEncoded = base64_encode($dataPlain);
 
         if (!Storage::disk('public')->exists($path)) {
-            $imageManager = app(ImageManager::class);
-
-            // Buat file sementara QR
-            $tempFile = storage_path('app/temp_qr_' . Str::random(10) . '.png');
-
-            QrCode::format('png')
+            $qrContent = QrCode::format('png')
                 ->merge(public_path('img/logogolf.png'), 0.3, true)
                 ->size(500)
                 ->margin(2)
-                ->generate($dataEncoded, $tempFile);
+                ->generate($dataEncoded);
+            Storage::disk('public')->put($path, $qrContent);
+            // $imageManager = app(ImageManager::class);
 
-            $qrImage = file_get_contents($tempFile);
-            $qr = $imageManager->read($qrImage);
+            // // Buat file sementara QR
+            // $tempFile = storage_path('app/temp_qr_' . Str::random(10) . '.png');
 
-            // Tambahkan padding atas untuk nama
-            $paddingTop = 80;
-            $canvas = $imageManager->create($qr->width(), $qr->height() + $paddingTop, 'ffffff');
-            // Isi latar belakang manual dengan putih
-            $canvas->fill('ffffff');
+            // QrCode::format('png')
+            //     ->merge(public_path('img/logogolf.png'), 0.3, true)
+            //     ->size(500)
+            //     ->margin(2)
+            //     ->generate($dataEncoded, $tempFile);
 
-            // $canvas->place($qr);
-            $canvas->place($qr, 'top', 0, $paddingTop);
+            // $qrImage = file_get_contents($tempFile);
+            // $qr = $imageManager->read($qrImage);
 
-            // Tambahkan nama di atas QR
-            $canvas->text($peserta->nama, $qr->width() / 2, 10, function ($font) {
-                $font->filename(public_path('fonts/arial/ARIALBD.TTF')); // Menggunakan font bold
-                $font->size(22);
-                $font->color('000000');
-                $font->align('center');
-                $font->valign('top');
-            });
+            // // Tambahkan padding atas untuk nama
+            // $paddingTop = 80;
+            // $canvas = $imageManager->create($qr->width(), $qr->height() + $paddingTop, 'ffffff');
+            // // Isi latar belakang manual dengan putih
+            // $canvas->fill('ffffff');
 
-            $canvas->text($peserta->instansi, $qr->width() / 2, 35, function ($font) {
-                $font->filename(public_path('fonts/arial/ARIALBD.TTF')); // Menggunakan font bold
-                $font->size(20);
-                $font->color('000000');
-                $font->align('center');
-                $font->valign('top');
-            });
+            // // $canvas->place($qr);
+            // $canvas->place($qr, 'top', 0, $paddingTop);
 
-            $canvas->text('ID0' . $peserta->id, $qr->width() / 2, 60, function ($font) {
-                $font->filename(public_path('fonts/arial/ARIALBD.TTF')); // Menggunakan font bold
-                $font->size(20);
-                $font->color('000000');
-                $font->align('center');
-                $font->valign('top');
-            });
+            // // Tambahkan nama di atas QR
+            // $canvas->text($peserta->nama, $qr->width() / 2, 10, function ($font) {
+            //     $font->filename(public_path('fonts/arial/ARIALBD.TTF')); // Menggunakan font bold
+            //     $font->size(22);
+            //     $font->color('000000');
+            //     $font->align('center');
+            //     $font->valign('top');
+            // });
 
-            // Simpan hasil ke storage
-            Storage::disk('public')->put($path, (string) $canvas->toPng());
+            // $canvas->text($peserta->instansi, $qr->width() / 2, 35, function ($font) {
+            //     $font->filename(public_path('fonts/arial/ARIALBD.TTF')); // Menggunakan font bold
+            //     $font->size(20);
+            //     $font->color('000000');
+            //     $font->align('center');
+            //     $font->valign('top');
+            // });
+
+            // $canvas->text('ID0' . $peserta->id, $qr->width() / 2, 60, function ($font) {
+            //     $font->filename(public_path('fonts/arial/ARIALBD.TTF')); // Menggunakan font bold
+            //     $font->size(20);
+            //     $font->color('000000');
+            //     $font->align('center');
+            //     $font->valign('top');
+            // });
+
+            // // Simpan hasil ke storage
+            // Storage::disk('public')->put($path, (string) $canvas->toPng());
 
             // Hapus file sementara
-            @unlink($tempFile);
+            // @unlink($tempFile);
         }
     }
 
