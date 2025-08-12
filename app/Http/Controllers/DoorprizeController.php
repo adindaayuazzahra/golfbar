@@ -6,18 +6,66 @@ use App\Models\Display;
 use App\Models\Hadiah;
 use App\Models\Peserta;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class DoorprizeController extends Controller
 {
+
+
+    public function  getAllPeserta()
+    {
+        $peserta = Peserta::all();
+        return response()->json($peserta);
+    }
+
+    public function displayView()
+    {
+        $hadiahs = Hadiah::all();
+        return view('admin.doorprize', compact('hadiahs'));
+    }
+
+
+    public function getFotoHadiah($id)
+    {
+        $hadiah = Hadiah::find($id);
+        $img =  Storage::url('public/images/' . $hadiah->foto);
+        if ($hadiah) {
+            return response()->json(['foto' => $img]);
+        }
+        return response()->json(['foto' => null]);
+    }
+
+    public function getPemenang($hadiah_id)
+    {
+        $pemenangList = Peserta::where('id_hadiah', $hadiah_id)
+            ->get();
+        return response()->json($pemenangList);
+    }
+
+
+    public function getReset($hadiah_id)
+    {
+        Peserta::where('id_hadiah', $hadiah_id)
+            ->update(['id_hadiah' => null, 'status' => 2]);
+
+        $hadiah = Hadiah::find($hadiah_id);
+        $pemenangList = Peserta::whereNull('id_hadiah')->inRandomOrder()->limit($hadiah->jumlah)->get();
+
+        foreach ($pemenangList as $peserta) {
+            $peserta->update([
+                'id_hadiah' => $hadiah_id,
+                'status' => 3
+            ]);
+        }
+
+        return response()->json($pemenangList);
+    }
+
     public function buttonGen()
     {
         return view('admin.button-trigger');
     }
 
-    public function displayView()
-    {
-        return view('admin.doorprize');
-    }
 
     public function ambilHadiah()
     {

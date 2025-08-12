@@ -7,6 +7,8 @@ use App\Http\Controllers\DoorprizeController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
+use SimpleSoftwareIO\QrCode\ImageMerge;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -17,9 +19,13 @@ use Illuminate\Support\Facades\Artisan;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
 Route::get('/foo', function () {
     Artisan::call('storage:link');
-    });
+});
+
+
+
 Route::get('/', [UserController::class, 'index'])->name('index');
 Route::middleware('is.form.filled')->group(function () {
     Route::get('/berhasil', [UserController::class, 'BerhasilRegis'])->name('berhasil.regis');
@@ -32,8 +38,9 @@ Route::post('/login/do', [AuthCOntroller::class, 'loginDo'])->name('login.do');
 Route::middleware(['auth'])->group(function () {
     Route::get('/admin', [AdminController::class, 'home'])->name('admin.home');
     Route::get('/admin/list-peserta', [AdminController::class, 'listPeserta'])->name('admin.list.peserta');
+    Route::post('/users-import', [AdminController::class, 'import'])->name('users.import');
     Route::get('/admin/list-grup', [AdminController::class, 'listGrup'])->name('admin.list.grup');
-   
+
 
     Route::post('/admin/grup/add', [AdminController::class, 'grupAdd'])->name('admin.grup.add');
     Route::post('/admin/grup/edit/{id}', [AdminController::class, 'grupEdit'])->name('admin.grup.edit');
@@ -54,16 +61,21 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/scan', [AdminController::class, 'scan'])->name('admin.scan');
     Route::post('/admin/scan/do', [AdminController::class, 'scanDo'])->name('admin.scan.do');
     Route::post('/admin/scan/gun/do', [AdminController::class, 'scanGunDo'])->name('admin.scan.gun.do');
+    Route::post('/admin/input/id/do', [AdminController::class, 'inputIdDo'])->name('admin.input.id.do');
     Route::get('/admin/download/{id}', [AdminController::class, 'downloadQr'])->name('admin.download.qr');
 
-    Route::post('users-import', [AdminController::class, 'import'])->name('users.import');
-    
     Route::get('/logout/do', [AuthController::class, 'logoutDo'])->name('logout.do');
 });
 
-Route::get('/admin/flight/view', [AdminController::class, 'flightView'])->name('admin.flight.view');
-Route::get('/button-gen', [DoorprizeController::class, 'buttonGen'])->name('admin.button.generate');
+Route::get('/flight/view', [AdminController::class, 'flightView'])->name('admin.flight.view');
+
+// Route::get('/button-gen', [DoorprizeController::class, 'buttonGen'])->name('admin.button.generate');
+// Route::get('/ambil/hadiah', [DoorprizeController::class, 'ambilHadiah'])->name('admin.ambil.hadiah');
+// Route::get('/display/{id}/{status}', [DoorprizeController::class, 'display'])->name('admin.display');
+// Route::get('/ambil/display', [DoorprizeController::class, 'ambilDisplay'])->name('admin.ambil.display');
+
 Route::get('/display/view', [DoorprizeController::class, 'displayView'])->name('admin.display.view');
-Route::get('/ambil/hadiah', [DoorprizeController::class, 'ambilHadiah'])->name('admin.ambil.hadiah');
-Route::get('/display/{id}/{status}', [DoorprizeController::class, 'display'])->name('admin.display');
-Route::get('/ambil/display', [DoorprizeController::class, 'ambilDisplay'])->name('admin.ambil.display');
+Route::get('/get-pemenang/{hadiah_id}', [DoorprizeController::class, 'getPemenang'])->name('getPemenang');
+Route::get('/get/foto/hadiah/{id}', [DoorprizeController::class, 'getFotoHadiah'])->name('get.foto.hadiah');
+Route::get('/get-all-peserta', [DoorprizeController::class, 'getAllPeserta'])->name('getAllPeserta');
+Route::get('/get-reset/{hadiah_id}', [DoorprizeController::class, 'getReset'])->name('getReset');

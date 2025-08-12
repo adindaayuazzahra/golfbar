@@ -1,144 +1,186 @@
 @extends('layout.web')
 @section('cssPage')
-<style>
-    #canvas {
-        height: 100vh;
-    }
-</style>
+    <style>
+        #canvas {
+            height: 100vh;
+        }
+    </style>
 @endsection
 @section('content')
-<div class="row">
-    <div class="card" style="width:80vw">
-        <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5><strong>{{$grup->nama_grup}} ({{ $grup->jumlah}} Anggota)</strong></h5>
-                <div>
-                    <a href="{{route('admin.list.grup')}}" class="btn btn-secondary" style="border-radius: 5px;">
-                        <i class="fa-solid fa-arrow-left-long"></i>
-                    </a>
-                    <button class="btn btn-warning" style="display: none;" id="btn-lock">Lock Pemenang</button>
-                    <input type="hidden" id="grup" value="{{$grup->id}}">
-                    <button id="btn-generate" type="button" class="btn btn-primary">
-                        Generate
-                    </button>
+    <div class="row">
+        <div class="card" style="width:80vw">
+            <div class="card-body">
+                <div class="row d-flex justify-content-between align-items-center mb-3">
+                    <h5><strong>{{ $grup->nama_grup }} ({{ $grup->jumlah }} Anggota)</strong></h5>
+                    <form id="formAddUsers" method="POST" action="{{ route('admin.grup.generate.do') }}">
+                        {{-- <form id="formAddUsers" method="POST" action="{{ route('admin.grup.generate.do', ['id' => $grup->id]) }}"> --}}
+                        @csrf
+                        <input type="hidden" id="grup_id" name="grup_id" value="{{ $grup->id }}">
+                        <table id="pesertaTable" class="table">
+                            <thead>
+                                <tr>
+                                    <th># ID</th>
+                                    <th>Name Apps</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($pesertas as $a)
+                                    <tr>
+                                        <td>{{ $a->id }}</td>
+                                        <td>{{ $a->nama }}</td>
+                                        <td>
+                                            <input type="checkbox" name="selected_users[]" value="{{ $a->id }}"
+                                                {{ $a->id_grup && $a->id_grup == $grup->id ? 'checked' : '' }}
+                                                class="user-checkbox">
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+
+                        <div>
+                            <a href="{{ route('admin.list.grup') }}" class="btn btn-secondary" style="border-radius: 5px;">
+                                <i class="fa-solid fa-arrow-left-long"></i>
+                            </a>
+                            <button id="btn-generate" type="submit" class="btn btn-primary">
+                                Generate
+                            </button>
+                        </div>
+                    </form>
                 </div>
+                {{-- <div id="hasil-generate"></div> --}}
             </div>
-            <div id="hasil-generate"></div>
         </div>
     </div>
-</div>
 @endsection
 @section('jsPage')
-<script>
-    $(document).ready(function() {
+    <script>
+        $(document).ready(function() {
 
-        // Meng-handle klik tombol generate
-        $('#btn-generate').on('click', function() {
-            var id = $('#grup').val();
-            // Mengambil data pemenang sesuai hadiah
-            $.ajax({
-                url: "{{route('admin.grup.generate.do')}}",
-                type: 'POST',
-                data: {
-                    _token: "{{ csrf_token() }}",
-                    id: id
-                },
-                success: function(response) {
-                    if (response.error) {
-                        // Kuota sudah habis, tampilkan pesan kesalahan
-                        alert(response.error);
-                    } else {
-                        // Pastikan respons memiliki kunci yang benar, sesuai dengan 'peserta'
-                        var pesertaAcak = response.peserta;
+            let maxSelected = {{ $grup->jumlah }};
+            let selectedUsers = [];
 
-                        // Menampilkan hasil generate
-                        $('#hasil-generate').empty();
-
-                        if (pesertaAcak.length > 0) {
-                            // Buat tabel dan header
-                            var table = $('<table>').addClass('table');
-                            var thead = $('<thead>');
-                            var tbody = $('<tbody>');
-
-                            // Tambahkan header ke dalam thead
-                            var headerRow = $('<tr>').append(
-                                $('<th>').text('No'),
-                                $('<th>').text('NPP'),
-                                $('<th>').text('Nama Peserta')
-                            );
-                            thead.append(headerRow);
-
-                            // Iterasi melalui pesertaAcak dan tambahkan baris ke dalam tbody
-                            $.each(pesertaAcak, function(index, peserta) {
-                                var row = $('<tr>').append(
-                                    $('<td>').text(index + 1),
-                                    $('<td>').text(peserta.npp),
-                                    $('<td>').text(peserta.nama)
-                                );
-                                tbody.append(row);
-                            });
-
-                            // Tambahkan thead dan tbody ke dalam tabel
-                            table.append(thead, tbody);
-
-                            // Tampilkan tabel di dalam elemen 'hasil-generate'
-                            $('#hasil-generate').append(table);
-                        } else {
-                            // Tampilkan pesan jika tidak ada pesertaAcak
-                            $('#hasil-generate').append('<p>Semua Peserta Sudah Mendapat Grup</p>');
-                        }
-                    
-
-                        // Menampilkan tombol lock
-                        $('#btn-lock').show();
-                    }
-
-                },
-                error: function(error) {
-                    // Tangani kesalahan jika terjadi
-                    alert('Terjadi kesalahan saat melakukan generate anggota group.');
-                },
+            // DataTable init
+            let table = $('#pesertaTable').DataTable({
+                paging: true,
+                searching: true
             });
-        });
 
-        $('#btn-lock').on('click', function() {
-            var idGrup = $('#grup').val(); // Mengambil ID hadiah dari elemen dengan id 'hadiah'
-            var anggotaData = []; // Menampung data peserta yang dihasilkan
+            // Ambil semua centangan awal
+            table.rows().every(function() {
+                let checkbox = $(this.node()).find('.user-checkbox');
+                if (checkbox.prop('checked')) {
+                    selectedUsers.push(checkbox.val());
+                }
+            });
 
-            // Mengambil nama peserta dari hasil generate
-            $('#hasil-generate tbody tr').each(function(index, row) {
-                var nppPeserta = $(row).find('td:nth-child(2)').text().trim(); // Mengambil NPP peserta
-                var namaPeserta = $(row).find('td:nth-child(3)').text().trim(); // Mengambil nama peserta
+            // Event saat checkbox diklik
+            $(document).on('change', '.user-checkbox', function() {
+                let val = $(this).val();
+                if ($(this).prop('checked')) {
+                    if (selectedUsers.length < maxSelected) {
+                        if (!selectedUsers.includes(val)) selectedUsers.push(val);
+                    } else {
+                        $(this).prop('checked', false);
+                        alert('Maksimal ' + maxSelected + ' anggota.');
+                    }
+                } else {
+                    selectedUsers = selectedUsers.filter(id => id !== val);
+                }
+                updateCheckboxStates();
+            });
 
-                // Menyimpan data peserta ke dalam array
-                anggotaData.push({
-                    npp: nppPeserta,
-                    nama: namaPeserta
+            // Update status disable checkbox
+            function updateCheckboxStates() {
+                table.rows().every(function() {
+                    let checkbox = $(this.node()).find('.user-checkbox');
+                    if (selectedUsers.length >= maxSelected && !checkbox.prop('checked')) {
+                        checkbox.prop('disabled', true);
+                    } else {
+                        checkbox.prop('disabled', false);
+                    }
+                });
+            }
+
+            // Restore centangan setelah redraw DataTable
+            table.on('draw', function() {
+                table.rows().every(function() {
+                    let checkbox = $(this.node()).find('.user-checkbox');
+                    checkbox.prop('checked', selectedUsers.includes(checkbox.val()));
+                });
+                updateCheckboxStates();
+            });
+
+            // Submit form kirim semua pilihan
+            $('#formAddUsers').on('submit', function(e) {
+                // Bersihkan hidden input lama
+                $('#formAddUsers input[name="selected_users[]"]').remove();
+
+                // Tambahkan hidden input untuk semua selectedUsers
+                selectedUsers.forEach(function(id) {
+                    $('<input>').attr({
+                        type: 'hidden',
+                        name: 'selected_users[]',
+                        value: id
+                    }).appendTo('#formAddUsers');
                 });
             });
 
-            // Mengirim data pemenang ke server untuk dilock
-            $.ajax({
-                url: "{{route('admin.grup.generate.lock')}}",
-                type: 'POST',
-                data: {
-                    anggota: anggotaData,
-                    id: idGrup,
-                    _token: "{{ csrf_token() }}" // Jangan lupa sertakan token CSRF jika diperlukan
-                },
-                success: function(response) {
-                    // Menampilkan pesan sukses atau melakukan tindakan lainnya
-                    alert(response.message);
-                },
-                error: function(error) {
-                    // Tangani kesalahan jika terjadi
-                    // var errorMessage = xhr.responseText;
-                    alert('Terjadi kesalahan saat melakukan locking Anggota');
-                }
-            });
+            // Init awal
+            updateCheckboxStates();
+
+            // var table = $('#pesertaTable').DataTable();
+
+            // let maxSelected = {{ $grup->jumlah }}; // batas total grup
+            // let selectedUsers = [];
+
+            // // Ambil checkbox yang sudah tercentang dari awal
+            // $('input[name="selected_users[]"]:checked').each(function() {
+            //     selectedUsers.push($(this).val());
+            // });
+
+            // // Saat halaman load, kalau sudah penuh, disable sisanya
+            // if (selectedUsers.length >= maxSelected) {
+            //     $('input[name="selected_users[]"]').not(':checked').prop('disabled', true);
+            // }
+
+            // // Saat checkbox diklik
+            // $(document).on('change', 'input[name="selected_users[]"]', function() {
+            //     let val = $(this).val();
+
+            //     if ($(this).prop('checked')) {
+            //         if (selectedUsers.length < maxSelected) {
+            //             selectedUsers.push(val);
+            //         } else {
+            //             // kalau penuh, batalkan centang
+            //             $(this).prop('checked', false);
+            //             alert('Maksimal ' + maxSelected + ' anggota untuk grup ini.');
+            //         }
+            //     } else {
+            //         selectedUsers = selectedUsers.filter(v => v !== val);
+            //     }
+
+            //     // Set disabled kalau penuh
+            //     if (selectedUsers.length >= maxSelected) {
+            //         $('input[name="selected_users[]"]').not(':checked').prop('disabled', true);
+            //     } else {
+            //         $('input[name="selected_users[]"]').prop('disabled', false);
+            //     }
+            // });
+
+            // Inject input sebelum submit form
+            // $('#formAddUsers').on('submit', function() {
+            //     $('#formAddUsers input[type="hidden"][name="selected_users[]"]').remove();
+            //     selectedUsers.forEach(function(id) {
+            //         $('<input>').attr({
+            //             type: 'hidden',
+            //             name: 'selected_users[]',
+            //             value: id
+            //         }).appendTo('#formAddUsers');
+            //     });
+            // });
+
         });
-
-
-    });
-</script>
+    </script>
 @endsection

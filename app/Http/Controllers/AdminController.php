@@ -11,13 +11,20 @@ use Illuminate\Http\Request;
 use App\Imports\PesertaImport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
-// use Intervention\Image\Image;
-use Intervention\Image\ImageManager as Image;
+use Intervention\Image\ImageManager;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Illuminate\Support\Str;
 
 
 class AdminController extends Controller
 {
+    // protected $imageManager;
+
+    // public function __construct(ImageManager $imageManager)
+    // {
+    //     $this->imageManager = $imageManager;
+    // }
+
     public function home()
     {
         return view('admin.home');
@@ -51,6 +58,13 @@ class AdminController extends Controller
                         'id_grup' => $row['id_grup'],
                         'whatsapp' => $row['whatsapp'],
                     ]);
+                    $oldFile = $existingUser->nama . '_' . $existingUser->instansi . '.png';
+                    $oldPath = 'qrcodes/' . $oldFile;
+                    if (Storage::disk('public')->exists($oldPath)) {
+                        Storage::disk('public')->delete($oldPath);
+                    }
+
+                    $this->generateQRCodeIfNeeded($existingUser);
                 } else {
                     // Jika entri belum ada, buat entri baru
                     $newPeserta = Peserta::create([
@@ -61,7 +75,6 @@ class AdminController extends Controller
                         'id_grup' => $row['id_grup'],
                         'whatsapp' => $row['whatsapp'],
                     ]);
-
                     $this->generateQRCodeIfNeeded($newPeserta);
                 }
             }
@@ -71,25 +84,93 @@ class AdminController extends Controller
         return  redirect()->route('admin.list.peserta', compact('pesertas'));
     }
 
+    // private function generateQRCodeIfNeeded($peserta)
+    // {
+    //     $nama_file = $peserta->nama . '_' . $peserta->instansi . '.png';
+    //     $path = 'qrcodes/' . $nama_file;
+
+    //     // Periksa apakah QR code sudah ada
+    //     if (!Storage::disk('public')->exists($path)) {
+    //         // Jika QR code belum ada, generate QR code 
+    //         $qrcode = QrCode::format('png')
+    //             // ->merge(public_path('../../img/logogolf.png'), 0.3, true)
+    //             ->merge('../public/img/logogolf.png', 0.3, true) // Menggabungkan logo dengan proporsi 30% terhadap ukuran QR code
+    //             ->size(500)
+    //             ->margin(3)
+    //             ->generate($peserta->nama);
+
+    //         // Simpan QR code sebagai gambar di direktori publik
+    //         Storage::disk('public')->put($path, $qrcode);
+    //     }
+    // }
+
+
     private function generateQRCodeIfNeeded($peserta)
     {
         $nama_file = $peserta->nama . '_' . $peserta->instansi . '.png';
         $path = 'qrcodes/' . $nama_file;
 
-        // Periksa apakah QR code sudah ada
-        if (!Storage::disk('public')->exists($path)) {
-            // Jika QR code belum ada, generate QR code 
-            $qrcode = QrCode::format('png')
-                // ->merge(public_path('../../img/logogolf.png'), 0.3, true)
-                ->merge('../public/img/logogolf.png', 0.3, true) // Menggabungkan logo dengan proporsi 30% terhadap ukuran QR code
-                ->size(500)
-                ->margin(3)
-                ->generate($peserta->nama);
+        $dataPlain = $peserta->id . '|' . $peserta->nama . '|' . $peserta->instansi;
+        $dataEncoded = base64_encode($dataPlain);
 
-            // Simpan QR code sebagai gambar di direktori publik
-            Storage::disk('public')->put($path, $qrcode);
+        if (!Storage::disk('public')->exists($path)) {
+            $imageManager = app(ImageManager::class);
+
+            // Buat file sementara QR
+            $tempFile = storage_path('app/temp_qr_' . Str::random(10) . '.png');
+
+            QrCode::format('png')
+                ->merge(public_path('img/logogolf.png'), 0.3, true)
+                ->size(500)
+                ->margin(2)
+                ->generate($dataEncoded, $tempFile);
+
+            $qrImage = file_get_contents($tempFile);
+            $qr = $imageManager->read($qrImage);
+
+            // Tambahkan padding atas untuk nama
+            $paddingTop = 80;
+            $canvas = $imageManager->create($qr->width(), $qr->height() + $paddingTop, 'ffffff');
+            // Isi latar belakang manual dengan putih
+            $canvas->fill('ffffff');
+
+            // $canvas->place($qr);
+            $canvas->place($qr, 'top', 0, $paddingTop);
+
+            // Tambahkan nama di atas QR
+            $canvas->text($peserta->nama, $qr->width() / 2, 10, function ($font) {
+                $font->filename(public_path('fonts/arial/ARIALBD.TTF')); // Menggunakan font bold
+                $font->size(22);
+                $font->color('000000');
+                $font->align('center');
+                $font->valign('top');
+            });
+
+            $canvas->text($peserta->instansi, $qr->width() / 2, 35, function ($font) {
+                $font->filename(public_path('fonts/arial/ARIALBD.TTF')); // Menggunakan font bold
+                $font->size(20);
+                $font->color('000000');
+                $font->align('center');
+                $font->valign('top');
+            });
+
+            $canvas->text('ID0' . $peserta->id, $qr->width() / 2, 60, function ($font) {
+                $font->filename(public_path('fonts/arial/ARIALBD.TTF')); // Menggunakan font bold
+                $font->size(20);
+                $font->color('000000');
+                $font->align('center');
+                $font->valign('top');
+            });
+
+            // Simpan hasil ke storage
+            Storage::disk('public')->put($path, (string) $canvas->toPng());
+
+            // Hapus file sementara
+            @unlink($tempFile);
         }
     }
+
+
 
     // private function generateQRCodeIfNeeded($peserta)
     // {
@@ -124,6 +205,7 @@ class AdminController extends Controller
     //     // // Setelah QR code dibuat atau jika sudah ada, Anda dapat mengembalikan respons download seperti yang Anda lakukan sebelumnya
     //     // return response()->download(storage_path('app/public/' . $path));
     // }
+
 
     public function scan()
     {
@@ -161,8 +243,11 @@ class AdminController extends Controller
     public function scanGunDo(Request $request)
     {
         $pesertas = Peserta::all();
-        $nama = $request->nama;
-        $peserta = Peserta::where('nama', $nama)->first();
+        $qrResult = $request->input('qr_result');
+        // Decode Base64
+        $decoded = base64_decode($qrResult, true);
+        list($id, $nama, $instansi) = explode('|', $decoded);
+        $peserta = Peserta::find($id);
         if (!$peserta) {
             $request->session()->flash('message', 'Peserta belum terdaftar');
             $request->session()->flash('title', 'Gagal registrasi!');
@@ -175,6 +260,36 @@ class AdminController extends Controller
             $nama = $peserta->nama;
             $request->session()->flash('title', 'Berhasil Registrasi!');
             $request->session()->flash('message', 'Selamat ' . $nama . ', Anda berhasil melakukan registrasi');
+            $request->session()->flash('icon', 'success');
+            return redirect()->route('admin.list.peserta', compact('pesertas'));
+        } else if ($peserta && $peserta->status == 2) {
+            $nama = $peserta->nama;
+            $request->session()->flash('message', 'Peserta Sudah Melakukan Registrasi Qrcode Atas Nama ' . $nama);
+            $request->session()->flash('title', 'Gagal registrasi!');
+            $request->session()->flash('icon', 'danger');
+            return redirect()->route('admin.list.peserta', compact('pesertas'));
+        }
+    }
+
+    public function inputIdDo(Request $request)
+    {
+        request()->validate([
+            'id' => 'required|exists:tb_peserta,id',
+        ]);
+        $pesertas = Peserta::all();
+        $peserta = Peserta::find($request->id);
+        if (!$peserta) {
+            $request->session()->flash('message', 'Peserta belum terdaftar');
+            $request->session()->flash('title', 'Gagal registrasi!');
+            $request->session()->flash('icon', 'danger');
+            return redirect()->route('admin.list.peserta', compact('pesertas'));
+        }
+        if ($peserta && $peserta->status == 0 || $peserta->status == 1) {
+            $peserta->status = 2;
+            $peserta->save();
+            $nama = $peserta->nama;
+            $request->session()->flash('title', 'Berhasil Registrasi!');
+            $request->session()->flash('message', 'Peserta ' . $nama . ' Berhasil Registrasi');
             $request->session()->flash('icon', 'success');
             return redirect()->route('admin.list.peserta', compact('pesertas'));
         } else if ($peserta && $peserta->status == 2) {
@@ -231,24 +346,55 @@ class AdminController extends Controller
     public function grupGenerate($id)
     {
         $grup = Grup::find($id);
-        return view('admin.generate-grup', compact('grup'));
+        $pesertas = Peserta::where(function ($query) use ($grup) {
+            $query->where('id_grup', $grup->id)
+                ->orWhereNull('id_grup');
+        })->get();
+        return view('admin.generate-grup', compact('grup', 'pesertas'));
     }
 
     public function grupGenerateDo(Request $request)
     {
-        $count = Peserta::where('id_grup', $request->id)->count();
-        $jumlahHadiah = Grup::find($request->id)->jumlah;
+        $grupId = $request->input('grup_id');
+        $selectedUsers = $request->input('selected_users', []); // Ambil array ID peserta
+        // dd($selectedUsers);
+        $grup = Grup::findOrFail($grupId);
 
-        // Ngecek sisa
-        $sisa = $jumlahHadiah - $count;
+        // Hitung jumlah anggota sekarang
+        $anggotaSekarang = Peserta::where('id_grup', $grupId)->count();
 
-        if ($jumlahHadiah == $count && $sisa == 0) {
-            return response()->json(['error' => 'Kuota hadiah sudah habis. Tidak dapat menambah anggota lagi.']);
-        } else {
-            $pesertaAcak = Peserta::where('status', 2)
-                ->whereNull('id_grup')->inRandomOrder()->limit($sisa)->get();
-            return response()->json(['peserta' => $pesertaAcak]);
+        // Hitung slot tersisa
+        $sisaSlot = $grup->jumlah - $anggotaSekarang;
+
+        // Validasi: jumlah yang dipilih tidak boleh melebihi slot tersisa
+        if (count($selectedUsers) > $sisaSlot + $anggotaSekarang) {
+            return redirect()->back()->withErrors(['msg' => 'Jumlah anggota melebihi kuota grup']);
         }
+
+        // Reset semua peserta di grup ini yang tidak terpilih
+        Peserta::where('id_grup', $grupId)
+            ->whereNotIn('id', $selectedUsers)
+            ->update(['id_grup' => null]);
+
+        // Update semua peserta terpilih untuk masuk grup
+        Peserta::whereIn('id', $selectedUsers)
+            ->update(['id_grup' => $grupId]);
+
+        return redirect()->route('admin.list.grup')->with('success', 'Anggota grup berhasil diupdate.');
+
+        // $count = Peserta::where('id_grup', $request->id)->count();
+        // $jumlahHadiah = Grup::find($request->id)->jumlah;
+
+        // // Ngecek sisa
+        // $sisa = $jumlahHadiah - $count;
+
+        // if ($jumlahHadiah == $count && $sisa == 0) {
+        //     return response()->json(['error' => 'Kuota hadiah sudah habis. Tidak dapat menambah anggota lagi.']);
+        // } else {
+        //     $pesertaAcak = Peserta::where('status', 2)
+        //         ->whereNull('id_grup')->inRandomOrder()->limit($sisa)->get();
+        //     return response()->json(['peserta' => $pesertaAcak]);
+        // }
         // Ambil nama peserta secara acak sebanyak jumlah hadiah
     }
 
